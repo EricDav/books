@@ -1,12 +1,14 @@
 import { EntityManager, In, Repository } from 'typeorm';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
+import shortid from 'shortid';
 
 import { Book } from './models/book.model';
 import { Category } from './models/category.model';
 import { Comment } from './models/comment.model';
 import { User } from '../users/user.model';
 import { Language } from './models/language.model';
+import { handleErrorCatch } from 'src/utils/helper';
 
 @Injectable()
 export class UserService {
@@ -56,8 +58,193 @@ export class UserService {
                     HttpStatus.NOT_FOUND,
                   );
             }
-        } catch(err) {
 
+            if (!category) {
+                throw new HttpException(
+                    {
+                      status: HttpStatus.NOT_FOUND,
+                      error: `Category with the id ${data.categoryId} not found`,
+                    },
+                    HttpStatus.NOT_FOUND,
+                  );
+            }
+
+            if (!language) {
+                throw new HttpException(
+                    {
+                      status: HttpStatus.NOT_FOUND,
+                      error: `Language with the id ${data.languageId} not found`,
+                    },
+                    HttpStatus.NOT_FOUND,
+                  );
+            }
+
+            const book = await this.bookRepo.save(data);
+
+            return {
+                book,
+                message: 'Book stored successfully'
+            }
+            
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
+
+    async updateBook(data) {
+        try {
+            const book = await this.bookRepo.findOne({
+                where: {
+                    id: data.id
+                }
+            });
+
+            if (!book) {
+                throw new HttpException(
+                    {
+                      status: HttpStatus.NOT_FOUND,
+                      error: `Book with the id ${data.id} not found`,
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+
+            if (data.languageId) {
+                data.language = {
+                    id: data.languageId
+                }
+            }
+
+           await this.bookRepo.save({
+            ...book,
+            ...data,
+            id: book.id
+           });
+
+           return {
+            message: 'Book updated successfully'
+           }
+
+
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
+
+    async deleteBook(data) {
+        try {
+            await this.bookRepo.delete({
+                id: data.id
+            });
+
+            return {
+                message: 'Book deleted successfully'
+            }
+
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
+
+    async getBook(data) {
+        try {
+            const book = await this.bookRepo.findOne({
+                where: {
+                    id: data.id
+                },
+                relations: ['user', 'language', 'category', 'favorites']
+            });
+
+            if (!book) {
+                throw new HttpException(
+                    {
+                      status: HttpStatus.NOT_FOUND,
+                      error: `Book with the id ${data.id} not found`,
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+
+            return {
+                book,
+                message: 'Fetched book successfully'
+            }
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
+
+    async fetchBooks(data) {
+        try {
+            const books = await this.bookRepo
+                .createQueryBuilder('book')
+                .leftJoinAndSelect('book.user', 'user')
+                .leftJoinAndSelect('book.favorites', 'favorites')
+                .where(`user.id = :userId`, {userId: data.userId})
+                .getMany();
+            
+            return {
+                books,
+                message: 'Fetched all books successfully'
+            }
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
+
+    async createCategory(data) {
+        try {
+            const category = await this.categoryRepo.save({
+                id: shortid(),
+                ...data
+            });
+
+            return {
+                category,
+                message: 'Category created successfully'
+            }
+
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
+
+    async updateCategory(data) {
+        try {
+            const category = await this.categoryRepo.findOne({
+                where: {
+                    id: data.id
+                }
+            });
+
+            if (!category) {
+                throw new HttpException(
+                    {
+                      status: HttpStatus.NOT_FOUND,
+                      error: `Category with the id ${data.id} not found`,
+                    },
+                    HttpStatus.NOT_FOUND,
+                );
+            }
+
+            await this.categoryRepo.save({
+                ...data,
+                id: category.id
+            });
+
+            return {
+                message: 'Category updated successfully'
+            }
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
+
+    async deleteCategory(data) {
+        try {
+            
+        } catch(err) {
+            handleErrorCatch(err);
         }
     }
 }

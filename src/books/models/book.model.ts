@@ -5,6 +5,7 @@ import {
     Entity,
     JoinTable,
     ManyToOne,
+    OneToMany,
     OneToOne,
     PrimaryColumn,
     PrimaryGeneratedColumn,
@@ -14,6 +15,7 @@ import {
 import { Category } from './category.model';
 import { Comment } from './comment.model';
 import { Language } from './language.model';
+import { Favorite } from './favorite.model';
   
   @Entity({ name: 'books' })
   export class Book {
@@ -36,7 +38,13 @@ import { Language } from './language.model';
     description: string;
 
     @Column({nullable: false})
-    imageUrl: string;
+    coverImage: string;
+
+    @Column({nullable: false})
+    tags: string[];
+
+    @Column({nullable: false})
+    additionalImages: string[];
 
     @Column({nullable: false})
     fileUrl: string;
@@ -53,6 +61,9 @@ import { Language } from './language.model';
     @JoinTable()
     @OneToOne(type => Language)
     language: Language;
+
+    @OneToMany(type => Favorite, favorite => favorite.book)
+    favorites: Favorite[];
 
     @CreateDateColumn()
     createdAt: Date;
