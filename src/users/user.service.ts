@@ -13,12 +13,14 @@ import { config } from '../config';
 @Injectable()
 export class UserService {
     private userRepo: Repository<User>;
+    private roleRepo: Repository<Role>;
 
     constructor(
         @InjectEntityManager()
         private readonly entityManager: EntityManager,
     ) {
         this.userRepo = this.entityManager.getRepository(User);
+        this.roleRepo = this.entityManager.getRepository(Role);
     }
 
     async createUser(data: any) {
@@ -460,5 +462,103 @@ export class UserService {
             HttpStatus.INTERNAL_SERVER_ERROR,
           );
         }
-      }
+    }
+
+    async createRole(data) {
+        try {
+            const role = await this.roleRepo.save({
+                ...data
+            });
+
+            return {
+                message: 'Role created successfully',
+                role
+            }
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
+
+    async updateRole(data) {
+        try {
+            const role = await this.roleRepo.find({
+                where: {
+                    id: data.id
+                }
+            });
+
+            if (!role) {
+                throw new HttpException(
+                    {
+                      status: HttpStatus.NOT_FOUND,
+                      error: `role with id ${data.id} not found`,
+                    },
+                    HttpStatus.NOT_FOUND,
+                  );
+            }
+
+            await this.roleRepo.save({
+                ...data,
+                id: data.id
+            });
+
+            return {
+                message: 'Role updated successfully'
+            }
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
+
+    async deleteRole(data) {
+        try {
+            await this.roleRepo.delete({
+                id: data.id
+            });
+
+            return {
+                message: 'Role deleted successfully'
+            }
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
+
+    async fetchRole(data) {
+        try {
+            const role = await this.roleRepo.find({
+                where: {
+                    id: data.id
+                }
+            });
+
+            if (!role) {
+                throw new HttpException(
+                    {
+                      status: HttpStatus.NOT_FOUND,
+                      error: `role with id ${data.id} not found`,
+                    },
+                    HttpStatus.NOT_FOUND,
+                  );
+            }
+
+            return {
+                role
+            }
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
+
+    async fetchRoles() {
+        try {
+            const roles = await this.roleRepo.find();
+
+            return {
+                roles
+            }
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
 }

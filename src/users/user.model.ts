@@ -1,7 +1,9 @@
+import { Book } from 'src/books/models/book.model';
 import {
     Column,
     CreateDateColumn,
     Entity,
+    OneToMany,
     PrimaryColumn,
     UpdateDateColumn,
   } from 'typeorm';
@@ -37,6 +39,9 @@ import {
 
     @Column({nullable: true})
     tokenCreatedAt: string;
+
+    @OneToMany(type => Book, book => book.user)
+    books: Book[];
 
     @CreateDateColumn()
     createdAt: Date;

@@ -41,12 +41,6 @@ import { Favorite } from './favorite.model';
     coverImage: string;
 
     @Column({nullable: false})
-    tags: string[];
-
-    @Column({nullable: false})
-    additionalImages: string[];
-
-    @Column({nullable: false})
     fileUrl: string;
 
     @ManyToOne(type => User)

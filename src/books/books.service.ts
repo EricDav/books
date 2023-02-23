@@ -9,13 +9,16 @@ import { Comment } from './models/comment.model';
 import { User } from '../users/user.model';
 import { Language } from './models/language.model';
 import { handleErrorCatch } from 'src/utils/helper';
+import { Role } from '../users/models/role.model';
+import { UserRole } from 'src/users/models/userRole.model';
 
 @Injectable()
-export class UserService {
+export class BookService {
     private bookRepo: Repository<Book>;
     private categoryRepo: Repository<Category>;
     private commentRepo: Repository<Comment>;
     private userRepo: Repository<User>;
+    private roleRepo: Repository<Role>;
     private languageRepo: Repository<Language>;
 
     constructor(
@@ -242,7 +245,49 @@ export class UserService {
 
     async deleteCategory(data) {
         try {
-            
+            await this.categoryRepo.delete({
+                id: data.id
+            });
+
+            return {
+                success: true
+            }
+        } catch(err) {
+            handleErrorCatch(err);
+        }
+    }
+
+    async getFavourites(data) {
+        try {
+            const books = await this.bookRepo
+                .createQueryBuilder('book')
+                .innerJoin('book.favorites', 'favorites')
+                .where(`favorites.userId = :userId`, { userId: data.userId })
+                .getMany();
+
+            return {
+                favorites: books
+            }
+        } catch(err) {
+
+        }
+    }
+
+    async getPublishers(data) {
+        try {
+            const publishers = await this.userRepo
+                .createQueryBuilder('user')
+                .leftJoinAndSelect('user.books', 'books')
+                .leftJoinAndSelect('books.favorites', 'fovorites')
+                .innerJoinAndMapMany('user.userRole', UserRole, 'userRoles', 'user.id = userRoles.userId')
+                .innerJoinAndMapMany("user.role", Role, 'roles', 'user_roles.roleId = roles.id')
+                .where(`roles.name = 'publisher'`)
+                .getMany();
+
+            return {
+                publishers
+            }
+
         } catch(err) {
             handleErrorCatch(err);
         }
