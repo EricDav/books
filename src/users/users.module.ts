@@ -4,7 +4,7 @@ import { UserController } from './user.controller';
 import { EntityManager } from 'typeorm';
 
 @Module({
-    controllers:[UserController],
-    providers: [UserService]
+  controllers: [UserController],
+  providers: [UserService],
 })
 export class UsersModule {}

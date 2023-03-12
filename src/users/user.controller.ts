@@ -1,78 +1,96 @@
-import { Controller, Inject, Get, Req, Post, Put, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Inject,
+  Get,
+  Req,
+  Post,
+  Put,
+  Delete,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 
 @Controller('/v1')
 export class UserController {
-    constructor(
-        @Inject(UserService)
-        private readonly userService: UserService,
-    ) { }
+  constructor(
+    @Inject(UserService)
+    private readonly userService: UserService,
+  ) {}
 
-    @Post('/users')
-    async createUser(@Req() data: any): Promise<any> {
-        return this.userService.createUser(data.body)
-    }
+  @Post('/users')
+  async createUser(@Req() data: any): Promise<any> {
+    return this.userService.createUser(data.body);
+  }
 
+  @Post('/login')
+  async loginUser(@Req() data: any): Promise<any> {
+    return this.userService.login(data.body);
+  }
 
-    @Post('/login')
-    async loginUser(@Req() data: any): Promise<any> {
-        return this.userService.login(data.body);
-    }
+  @Get('/users/:userId')
+  async fetchUserById(@Req() req: any): Promise<any> {
+    return this.userService.fetchUsersById(req.params);
+  }
 
+  @Put('/users/:userId')
+  async updateUser(@Req() data: any): Promise<any> {
+    return this.userService.updateUser({ ...data.params, ...data.body });
+  }
 
-    @Get('/:userId')
-    async fetchUserById(@Req() req: any): Promise<any> {
-        return this.userService.fetchUsersById(req.params)
-    }
+  @Put('/users/suspend/:userId')
+  async toggleUserSuspension(@Req() data: any): Promise<any> {
+    return this.userService.toggleUserSuspension({
+      ...data.params,
+      ...data.body,
+    });
+  }
 
+  @Post('/reset-password')
+  async resetPassword(@Req() req: any): Promise<any> {
+    return this.userService.resetPassword(req.body.token, req.body.password);
+  }
 
-    @Put('/:userId')
-    async updateUser(@Req() data: any): Promise<any> {
-        return this.userService.updateUser({ ...data.params, ...data.body});
-    }
+  @Post('/change-password')
+  async changePassword(@Req() req: any): Promise<any> {
+    return this.userService.changePassword(req.body);
+  }
 
-    @Put('/suspend/:userId')
-    async toggleUserSuspension(@Req() data: any): Promise<any> {
-        return this.userService.toggleUserSuspension({...data.params, ...data.body})
-    }
+  @Get('/reset-password/validate-link')
+  async validateLink(@Req() req: any): Promise<any> {
+    return this.userService.validateLink(req.query.token);
+  }
 
-    @Post('/reset-password')
-    async resetPassword(@Req() req: any): Promise<any> {
-      return this.userService.resetPassword(req.body.token, req.body.password);
-    }
+  @Post('/roles')
+  async createRole(@Req() data: any): Promise<any> {
+    return this.userService.createRole(data.body);
+  }
 
-    @Post('/change-password')
-    async changePassword(@Req() req: any): Promise<any> {
-      return this.userService.changePassword(req.body);
-    }
+  @Put('/roles/:id')
+  async updateRole(@Req() data: any): Promise<any> {
+    return this.userService.updateRole({ ...data.body, ...data.params });
+  }
 
-    @Get('/reset-password/validate-link')
-    async validateLink(@Req() req: any): Promise<any> {
-      return this.userService.validateLink(req.query.token);
-    }
+  @Delete('/roles/:roleId')
+  async deleteRole(@Req() data: any): Promise<any> {
+    return this.userService.deleteRole(data.params);
+  }
 
-    @Post('/roles')
-    async createRole(@Req() data: any): Promise<any> {
-        return this.userService.createRole(data.body)
-    }
+  @Get('/roles/:id')
+  async fetchRole(@Req() data: any): Promise<any> {
+    return this.userService.fetchRole(data.params);
+  }
 
-    @Put('/roles/:roleId')
-    async updateRole(@Req() data: any): Promise<any> {
-        return this.userService.updateRole({ ...data.body, ...data.params})
-    }
+  @Get('/roles')
+  async fetchRoles(@Req() data: any): Promise<any> {
+    return this.userService.fetchRoles();
+  }
 
-    @Delete('/roles/:roleId')
-    async deleteRole(@Req() data: any): Promise<any> {
-        return this.userService.deleteRole(data.params)
-    }
+  @Get('/auth/authenticated-user')
+  async fetchAuthUser(@Req() data: any): Promise<any> {
+    return this.userService.fetchAuthUser({ ...data.query });
+  }
 
-    @Get('/roles/:roleId')
-    async fetchRole(@Req() data: any): Promise<any> {
-        return this.userService.fetchRole(data.params)
-    }
-
-    @Get('/roles')
-    async fetchRoles(@Req() data: any): Promise<any> {
-        return this.userService.fetchRoles()
-    }
+  @Post('/auth/forgot-password')
+  async sendResetPasswordToken(@Req() data: any): Promise<any> {
+    return this.userService.sendResetPasswordToken(data.body.email);
+  }
 }

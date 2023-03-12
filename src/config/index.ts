@@ -6,10 +6,7 @@ dotenv.config();
 // validating environment variables
 const schema = joi
   .object({
-    NODE_ENV: joi
-    .string()
-    .valid('development', 'production')
-    .required(),
+    NODE_ENV: joi.string().valid('development', 'production').required(),
     DBUSER: joi.string().required(),
     DBPASSWORD: joi.string().required(),
     DBPORT: joi.number().port().required().default(5432),
@@ -36,10 +33,7 @@ if (error) {
 }
 
 export const config = {
-  isDevelopment:
-    envVars.NODE_ENV === 'development'
-      ? true
-      : false,
+  isDevelopment: envVars.NODE_ENV === 'development' ? true : false,
   isLocahost: envVars.NODE_ENV === 'development' ? true : false,
   NODE_ENV: envVars.NODE_ENV,
   email: envVars.EMAIL,

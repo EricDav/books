@@ -32,7 +32,7 @@ const databaseProvider = {
       // entities: config.isDevelopment
       //   ? ['src/**/*.model.ts']
       //   : ['dist/**/*.model.js'],
-      logging: config.db.logging,
+      logging: true,
       synchronize: true,
       extra: {
         trustServerCertificate: true,

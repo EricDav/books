@@ -1,78 +1,116 @@
-import { Controller, Inject, Get, Req, Post, Put, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Inject,
+  Get,
+  Req,
+  Post,
+  Put,
+  Delete,
+} from '@nestjs/common';
 import { BookService } from './books.service';
 import { AdvertismentService } from './advertisment.service';
 
-@Controller('/v1/books')
+@Controller('/v1')
 export class BookController {
-    constructor(
-        @Inject(BookService)
-        @Inject(AdvertismentService)
-        private readonly userService: BookService,
-        private readonly advertismentService: AdvertismentService,
-    ) { }
+  constructor(
+    @Inject(BookService)
+    @Inject(AdvertismentService)
+    private readonly bookService: BookService,
+    private readonly advertismentService: AdvertismentService,
+  ) {}
 
-    @Post('/')
-    async createBook(@Req() data: any): Promise<any> {
-        return this.userService.createBook(data.body)
-    }
+  @Post('/books')
+  async createBook(@Req() data: any): Promise<any> {
+    return this.bookService.createBook(data.body);
+  }
 
-    @Put('/')
-    async updateBook(@Req() data: any): Promise<any> {
-        return this.userService.updateBook(data.body)
-    }
+  @Put('/books/:id')
+  async updateBook(@Req() data: any): Promise<any> {
+    return this.bookService.updateBook(data.body);
+  }
 
-    @Delete('/:id')
-    async deleteBook(@Req() data: any): Promise<any> {
-        return this.userService.deleteBook(data.params)
-    }
+  @Delete('/books/:id')
+  async deleteBook(@Req() data: any): Promise<any> {
+    return this.bookService.deleteBook(data.params);
+  }
 
-    @Get('/')
-    async fetchBooks(@Req() data: any): Promise<any> {
-        return this.userService.getBook(data.query)
-    }
+  @Get('/books')
+  async fetchBooks(@Req() data: any): Promise<any> {
+    return this.bookService.fetchBooks(data.query);
+  }
 
-    @Get('/:id')
-    async getBook(@Req() data: any): Promise<any> {
-        return this.userService.getBook(data.params)
-    }
+  @Get('/books/:id')
+  async getBook(@Req() data: any): Promise<any> {
+    return this.bookService.getBook(data.params);
+  }
 
-    @Post('/category')
-    async createCategory(@Req() data: any): Promise<any> {
-        return this.userService.createBook(data.body)
-    }
+  @Post('/books/category')
+  async createCategory(@Req() data: any): Promise<any> {
+    return this.bookService.createCategory(data.body);
+  }
 
-    @Put('/category/:id')
-    async updateCategory(@Req() data: any): Promise<any> {
-        return this.userService.updateCategory(data.body)
-    }
+  @Get('/books/category/all')
+  async fetchCategory(@Req() data: any): Promise<any> {
+    return this.bookService.fetchAllCategory();
+  }
 
-    @Delete('/category/:id')
-    async deleteCategory(@Req() data: any): Promise<any> {
-        return this.userService.deleteCategory(data.params)
-    }
+  @Get('/books/category/all')
+  async fetchSingleCategory(@Req() data: any): Promise<any> {
+    return this.bookService.fetchAllCategory();
+  }
 
-    @Post('/advertisment')
-    async createAdvertisment(@Req() data: any): Promise<any> {
-        return this.advertismentService.create(data.body)
-    }
+  @Get('/books/single-category/:id')
+  async updateCategory(@Req() data: any): Promise<any> {
+    return this.bookService.fetchSingleCategory({ ...data.params });
+  }
 
-    @Post('/advertisments')
-    async updateAdvertisment(@Req() data: any): Promise<any> {
-        return this.advertismentService.update(data.body)
-    }
+  @Delete('/books/category/:id')
+  async deleteCategory(@Req() data: any): Promise<any> {
+    return this.bookService.deleteCategory(data.params);
+  }
 
-    @Get('/advertisments/all')
-    async getAdvertisments(@Req() data: any): Promise<any> {
-        return this.advertismentService.find()
-    }
+  @Post('/advertisments')
+  async createAdvertisment(@Req() data: any): Promise<any> {
+    return this.advertismentService.create(data.body);
+  }
 
-    @Get('/advertisments/:id')
-    async getAdvertisment(@Req() data: any): Promise<any> {
-        return this.advertismentService.update(data.params)
-    }
+  @Put('/advertisments/:id')
+  async updateAdvertisment(@Req() data: any): Promise<any> {
+    return this.advertismentService.update({ ...data.body, ...data.params });
+  }
 
-    @Delete('/advertisment/:id')
-    async deleteAdvertisment(@Req() data: any): Promise<any> {
-        return this.advertismentService.update(data.params)
-    }
+  @Get('/advertisments')
+  async getAdvertisments(@Req() data: any): Promise<any> {
+    return this.advertismentService.find();
+  }
+
+  @Get('/advertisments/:id')
+  async getAdvertisment(@Req() data: any): Promise<any> {
+    return this.advertismentService.findOne(data.params);
+  }
+
+  @Delete('/advertisments/:id')
+  async deleteAdvertisment(@Req() data: any): Promise<any> {
+    return this.advertismentService.deleteAdvert(data.params);
+  }
+
+  @Post('/tags')
+  async addTag(@Req() data: any): Promise<any> {
+    return this.bookService.addTag(data.body);
+  }
+
+  @Get('/tags')
+  async fetchTags(@Req() data: any): Promise<any> {
+    return this.bookService.fetchAllTags();
+  }
+
+  @Get('/tags/:id')
+  async fetchSingleTag(@Req() data: any): Promise<any> {
+    return this.bookService.fetchSingleTag(data.params);
+  }
+
+  @Delete('/tags/:id')
+  async deleteTag(@Req() data: any): Promise<any> {
+    return this.bookService.deleteTag(data.params);
+  }
 }

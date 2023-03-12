@@ -1,68 +1,73 @@
 import { User } from '../../users/user.model';
 import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    JoinTable,
-    ManyToOne,
-    OneToMany,
-    OneToOne,
-    PrimaryColumn,
-    PrimaryGeneratedColumn,
-    Unique,
-    UpdateDateColumn,
-  } from 'typeorm';
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Category } from './category.model';
 import { Comment } from './comment.model';
 import { Language } from './language.model';
 import { Favorite } from './favorite.model';
-  
-  @Entity({ name: 'books' })
-  export class Book {
-    @PrimaryColumn()
-    id?: string;
-    
-    @Column({nullable: false})
-    name: string;
 
-    @Column({nullable: false})
-    price: number;
+@Entity({ name: 'books' })
+export class Book {
+  @PrimaryColumn()
+  id?: string;
 
-    @Column({nullable: false})
-    readCount: number;
+  @Column({ nullable: false })
+  name: string;
 
-    @Column({nullable: false})
-    viewCount: number;
+  @Column({ nullable: false })
+  price: number;
 
-    @Column({nullable: true})
-    description: string;
+  @Column({ nullable: false, default: 0 })
+  readCount: number;
 
-    @Column({nullable: false})
-    coverImage: string;
+  @Column({ nullable: false, default: 0  })
+  viewCount: number;
 
-    @Column({nullable: false})
-    fileUrl: string;
+  @Column({ nullable: true })
+  description: string;
 
-    @ManyToOne(type => User)
-    user: User;
+  @Column({ nullable: false })
+  coverImage: string;
 
-    @ManyToOne(type => Category)
-    category: Category;
+  @Column({ nullable: false })
+  fileUrl: string;
 
-    @ManyToOne(type => Comment)
-    comments: Comment;
+  @ManyToOne((type) => User)
+  user: User;
 
-    @JoinTable()
-    @OneToOne(type => Language)
-    language: Language;
+  @ManyToOne((type) => Category)
+  category: Category;
 
-    @OneToMany(type => Favorite, favorite => favorite.book)
-    favorites: Favorite[];
+  @ManyToOne((type) => Comment)
+  comments: Comment;
 
-    @CreateDateColumn()
-    createdAt: Date;
-  
-    @UpdateDateColumn()
-    updatedAt: Date;
-  }
-  
+  @Column('jsonb', {nullable: false, default: '[]'})
+  tags: string[]
+
+  @JoinTable()
+  @OneToOne((type) => Language)
+  language: Language;
+
+  @OneToMany((type) => Favorite, (favorite) => favorite.book)
+  favorites: Favorite[];
+
+  @Column({nullable: false})
+  readTime: number; // in minutes
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}

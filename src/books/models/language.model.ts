@@ -1,29 +1,28 @@
 import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    ManyToOne,
-    PrimaryColumn,
-    PrimaryGeneratedColumn,
-    Unique,
-    UpdateDateColumn,
-  } from 'typeorm';
-  
-  @Entity({ name: 'languages' })
-  export class Language {
-    @PrimaryGeneratedColumn('increment')
-    id?: number;
-    
-    @Column({nullable: false})
-    name: string;
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
+} from 'typeorm';
 
-    @Column({nullable: false})
-    isoCode: string;
+@Entity({ name: 'languages' })
+export class Language {
+  @PrimaryGeneratedColumn('increment')
+  id?: number;
 
-    @CreateDateColumn()
-    createdAt: Date;
-  
-    @UpdateDateColumn()
-    updatedAt: Date;
-  }
-  
+  @Column({ nullable: false })
+  name: string;
+
+  @Column({ nullable: false })
+  isoCode: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}

@@ -1,119 +1,123 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
-import { InjectEntityManager } from "@nestjs/typeorm";
-import { handleErrorCatch } from "../utils/helper";
-import { EntityManager, Repository } from "typeorm";
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectEntityManager } from '@nestjs/typeorm';
+import { handleErrorCatch } from '../utils/helper';
+import { EntityManager, Repository } from 'typeorm';
+import * as shortid from 'shortid';
 
-import { Advertisment } from "./models/advertisment.model";
-
+import { Advertisment } from './models/advertisment.model';
 
 @Injectable()
 export class AdvertismentService {
-    private advertisementRepo: Repository<Advertisment>;
-    constructor(
-        @InjectEntityManager()
-        private readonly entityManager: EntityManager,
-    ) {
-        this.advertisementRepo = this.entityManager.getRepository(Advertisment);
+  private advertisementRepo: Repository<Advertisment>;
+  constructor(
+    @InjectEntityManager()
+    private readonly entityManager: EntityManager,
+  ) {
+    this.advertisementRepo = this.entityManager.getRepository(Advertisment);
+  }
+
+  async create(data) {
+    try {
+      delete data.tokenData;
+      const advert = await this.advertisementRepo.save({
+        ...data,
+        id: shortid()
+      });
+
+      return {
+        advert,
+        message: 'Advert created successfully',
+      };
+    } catch (err) {
+      handleErrorCatch(err);
     }
+  }
 
-    async create(data) {
-        try {
-            const advert = await this.advertisementRepo.save(data);
+  async update(data) {
+    try {
+      const advert = await this.advertisementRepo.findOne({
+        where: {
+          id: data.id,
+        },
+      });
 
-            return {
-                advert,
-                message: 'Advert created successfully'
-            }
-        } catch(err) {
-            handleErrorCatch(err);
-        }
+      if (!advert) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: `Advert with the id ${data.id} not found`,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      delete data.tokenData;
+      const updatedAdevert = await this.advertisementRepo.save({
+        ...advert,
+        ...data,
+        id: advert.id,
+      });
+
+      return {
+        advert: updatedAdevert,
+        message: 'Advert updated successfully',
+      };
+    } catch (err) {
+      handleErrorCatch(err);
     }
+  }
 
-    async update(data) {
-        try {
-            
-            const advert = await this.advertisementRepo.findOne({
-                where: {
-                    id: data.id
-                }
-            });
+  async findOne(data) {
+    try {
+      const advert = await this.advertisementRepo.findOne({
+        where: {
+          id: data.id,
+        },
+      });
 
-            if (!advert) {
-                throw new HttpException(
-                    {
-                      status: HttpStatus.NOT_FOUND,
-                      error: `Advert with the id ${data.id} not found`,
-                    },
-                    HttpStatus.NOT_FOUND,
-                );
-            }
+      if (!advert) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: `Advert with the id ${data.id} not found`,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      }
 
-            await this.advertisementRepo.save({
-                ...advert,
-                ...data,
-                id: advert.id
-            });
-
-            return {
-                advert,
-                message: 'Advert updated successfully'
-            }
-        } catch(err) {
-            handleErrorCatch(err);
-        }
+      return {
+        advert,
+        message: 'Fetched advert successfully',
+      };
+    } catch (err) {
+      handleErrorCatch(err);
     }
+  }
 
-    async findOne(data) {
-        try {
-            const advert = await this.advertisementRepo.findOne({
-                where: {
-                    id: data.id
-                }
-            });
+  async deleteAdvert(data) {
+    try {
+      await this.advertisementRepo.delete({
+        id: data.id,
+      });
 
-            if (!advert) {
-                throw new HttpException(
-                    {
-                      status: HttpStatus.NOT_FOUND,
-                      error: `Advert with the id ${data.id} not found`,
-                    },
-                    HttpStatus.NOT_FOUND,
-                );
-            }
-
-            return {
-                advert,
-                message: 'Fetched advert successfully'
-            }
-        } catch(err) {
-            handleErrorCatch(err);
-        }
+      return {
+        message: 'Advert deleted successfully',
+      };
+    } catch (err) {
+      handleErrorCatch(err);
     }
+  }
 
-    async deleteAdvert(data) {
-        try {
-            await this.advertisementRepo.delete({
-                id: data.id
-            });
+  async find() {
+    try {
+      const adverts = await this.advertisementRepo.find({});
 
-            return {
-                message: 'Advert deleted successfully'
-            }
-        } catch(err) {
-            handleErrorCatch(err);
-        }
+      return {
+        adverts,
+        message: 'Fetched all adverts successfully',
+      };
+    } catch (err) {
+      handleErrorCatch(err);
     }
-
-    async find() {
-        try {
-            const adverts = await this.advertisementRepo.find({});
-
-            return {
-                adverts,
-                message: 'Fetched all adverts successfully'
-            }
-        } catch(err) {
-            handleErrorCatch(err);
-        }
-    }
+  }
 }

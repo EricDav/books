@@ -1,16 +1,12 @@
-import {
-    Entity,
-    PrimaryColumn,
-  } from 'typeorm';
-  
-  @Entity({ name: 'userRoles' })
-  export class UserRole {
-    @PrimaryColumn()
-    userId: string;
+import { Entity, PrimaryColumn } from 'typeorm';
 
-    @PrimaryColumn()
-    roleId: number;
+@Entity({ name: 'userRoles' })
+export class UserRole {
+  @PrimaryColumn()
+  userId: string;
 
-    isPrimary: boolean;
-  }
-  
+  @PrimaryColumn()
+  roleId: number;
+
+  isPrimary: boolean;
+}

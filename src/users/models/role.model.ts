@@ -1,29 +1,28 @@
 import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    ManyToOne,
-    PrimaryColumn,
-    PrimaryGeneratedColumn,
-    Unique,
-    UpdateDateColumn,
-  } from 'typeorm';
-  
-  @Entity({ name: 'roles' })
-  export class Role {
-    @PrimaryGeneratedColumn('increment')
-    id?: number;
-    
-    @Column({nullable: false})
-    name: string;
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
+} from 'typeorm';
 
-    @Column({nullable: true})
-    description: string;
+@Entity({ name: 'roles' })
+export class Role {
+  @PrimaryGeneratedColumn('increment')
+  id?: number;
 
-    @CreateDateColumn()
-    createdAt: Date;
-  
-    @UpdateDateColumn()
-    updatedAt: Date;
-  }
-  
+  @Column({ nullable: false, unique: true })
+  name: string;
+
+  @Column({ nullable: true })
+  description: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
